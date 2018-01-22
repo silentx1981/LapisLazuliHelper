@@ -75,6 +75,8 @@ module LLH
 							result = run(content, required)
 						when "keys"
 							result = @key.sendKeys(identifier)
+						when "run"
+							result = Object.const_get(identifier.to_s).new(@browser).run(content)
 						when "setVars"
 							result = @vars.setVarsByExcel(content)
 						when "verify"

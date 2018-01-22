@@ -12,6 +12,14 @@ module LLH
 				@vars = LLH::Core::Vars.new
 			end
 
+			def copyToClipboard(text)
+				open('|pbcopy', "w") { |io| io << div.a.href }
+			end
+
+			def getBrowser
+				return @browser
+			end
+
 			def open(url)
 				result = false
 				if (@json.isJson(url))
@@ -34,10 +42,6 @@ module LLH
 				mail = LLH::Core::Mail.new(@browser)
 				result = mail.execute(json)
 				open(result)
-			end
-
-			def getBrowser
-				return @browser
 			end
 
 		end
