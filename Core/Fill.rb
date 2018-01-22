@@ -5,11 +5,15 @@ module LLH
 			@browser = nil
 			@wait = nil
 			@key = nil
+			@vars = nil
+			@config = nil
 
 			def initialize(browser)
 				@browser = browser
 				@wait = LLH::Core::Wait.new(@browser)
 				@key = LLH::Core::Key.new(@browser)
+				@vars = LLH::Core::Vars.new
+				@config = LLH::Core::Config.new
 			end
 
 			def fill(element, attribute, id, value)
@@ -24,16 +28,16 @@ module LLH
 			end
 
 			def fillFile(element, attribut, id, value)
+			    sleep 2
 				file = value
-				filesRoot = @vars.get(filesRoot)
-				file = filesRoot+"\\\\\\\\"+file
-				guiName = "GuiTestFile_"+id
-				objUpload = @browser.find(:like => [element, attribut, id], :throw => false)
+				filesRoot = @config.get("filesRoot")
+				file = filesRoot.to_s+"\\\\\\\\"+file.to_s
+				guiName = "GuiTestFile_"+id.to_s
+				objUpload = @browser.find(:like => [element.to_s, attribut.to_s, id.to_s], :throw => false)
 				@browser.execute_script("angular.element(\"input[name='"+guiName+"']\").removeClass('ng-hide')")
-				sleep 1
 				inputFile = @browser.find(:like => ["input", "name", guiName], :throw => false)
 				file = file.gsub('\\', '\\\\\\\\')
-				inputFile.send_keys(file)
+				inputFile.set(file)
 				@browser.execute_script("angular.element(\"iv-upload[name='"+id+"'] button\").scope().uploadFileGuiTest('"+guiName+"')")
 				sleep 1
 				@browser.execute_script("angular.element(\"input[name='"+guiName+"']\").addClass('ng-hide')")

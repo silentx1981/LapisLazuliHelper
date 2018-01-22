@@ -21,7 +21,7 @@ module LLH
 				@wait = LLH::Core::Wait.new(browser)
 			end
 
-			def run(excelfile, parentRequired = 'yes')
+			def run(excelfile, parentRequired = 'yes', sub = 0)
 
 				configRoot = @config.get('configRoot')
 				workbook = RubyXL::Parser.parse(configRoot+"/"+excelfile)
@@ -48,6 +48,13 @@ module LLH
 					# Get the Parsed Value
 					content = @vars.getParsedValue(content)
 
+                    i = 0
+                    while i < sub
+                        print " > "
+                        i = i + 1
+                    end
+					print excelfile.to_s+" / Row: "+index.to_s+" \n"
+
 					# Execute the action
 					result = false
 					case action
@@ -72,7 +79,7 @@ module LLH
 						when "openJson"
 							result = @browser.openJson(content)
 						when "include"
-							result = run(content, required)
+							result = run(content, required, (sub + 1))
 						when "keys"
 							result = @key.sendKeys(identifier)
 						when "run"
