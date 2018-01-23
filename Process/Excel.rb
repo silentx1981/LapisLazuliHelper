@@ -24,7 +24,7 @@ module LLH
 			def run(excelfile, parentRequired = 'yes', sub = 0)
 
 				configRoot = @config.get('configRoot')
-				workbook = RubyXL::Parser.parse(configRoot+"/"+excelfile)
+				workbook = RubyXL::Parser.parse(configRoot + "/" + excelfile)
 				worksheet = workbook[0]
 
 				index = 0;
@@ -48,20 +48,30 @@ module LLH
 					# Get the Parsed Value
 					content = @vars.getParsedValue(content)
 
-                    i = 0
-                    while i < sub
-                        print " > "
-                        i = i + 1
-                    end
-					print excelfile.to_s+" / Row: "+index.to_s+" \n"
+					if @config.get('showProgress') == 'yes'
+						i = 0
+						while i < sub
+							print " > "
+							i = i + 1
+						end
+						print excelfile.to_s + " / Row: " + index.to_s + " \n"
+					end
+
+					# Find the Waiting-Time from the Action-Statement
+					waitBefore = action.sub(/^([0-9]*[A-Za-z]*)/, "")
+					waitAfter = action.sub(/([A-Za-z]*[0-9]*)$/, "")
+
+					# Wait Before
+					if waitBefore.to_i > 0
+						sleep waitBefore.to_i
+					end
+
 
 					# Execute the action
 					result = false
 					case action
 						when "click"
 							result = @click.clickElement(element, attribute, identifier, content)
-						when "click5"
-							result = @click.clickElement(element, attribute, identifier, content, 5)
 						when "clickTableElement"
 							result = @click.clickTableElement(element, attribute, identifier, content)
 						when "command"
@@ -86,6 +96,8 @@ module LLH
 							result = @key.sendKeys(identifier)
 						when "run"
 							result = Object.const_get(identifier.to_s).new(@browser).run(content)
+						when "screenshot"
+							result = @browser.takeScreenshot()
 						when "setVars"
 							result = @vars.setVarsByExcel(content)
 						when "verify"
@@ -94,11 +106,16 @@ module LLH
 							result = @wait.waitTime(identifier)
 					end
 
+					# Wait After
+					if waitAfter.to_i > 0
+						sleep waitAfter.to_i
+					end
+
 					if result == false && required == 'yes' && parentRequired == 'yes'
 						print "Error in LLH::Process::Excel \n"
-						print "Row "+index.to_s+" \n"
-						print "File: "+excelfile+"\n"
-						print "Line-Informations: "+action.to_s+"/"+identifier.to_s+"/"+content.to_s+" \n"
+						print "Row " + index.to_s + " \n"
+						print "File: " + excelfile + "\n"
+						print "Line-Informations: " + action.to_s + "/" + identifier.to_s + "/" + content.to_s + " \n"
 						print "\n\n"
 						@browser.takeScreenshot()
 						break

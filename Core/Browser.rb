@@ -48,6 +48,7 @@ module LLH
 
 			def takeScreenshot
 				@browser.take_screenshot
+				result = true
 			end
 
 		end

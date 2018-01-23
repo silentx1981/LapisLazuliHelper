@@ -12,8 +12,7 @@ module LLH
 				@vars = LLH::Core::Vars.new
 			end
 
-			def clickElement(element, attribute, id, value, wait = 0)
-				@wait.waitTime(wait)
+			def clickElement(element, attribute, id, value)
 				@wait.waitDisappear("div", "data-notify", "container")
 				clickElement = @wait.wait(element, attribute, id)
 				if clickElement == nil
