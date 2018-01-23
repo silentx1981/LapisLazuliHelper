@@ -29,7 +29,15 @@ module LLH
 						:timeout     => @defaultTimeout
 					)
 				end
+			end
 
+			def waitDisappear(element, attribute, id)
+				instance = @browser.wait(
+            		element.to_s => {attribute.to_s => id.to_s},
+            		:condition   => :while,
+            		:throw       => false,
+            		:timeout     => @defaultTimeout
+            )
 			end
 
 			def waitTime(time)

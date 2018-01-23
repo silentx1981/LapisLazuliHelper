@@ -46,6 +46,10 @@ module LLH
 				open(result)
 			end
 
+			def takeScreenshot
+				@browser.take_screenshot
+			end
+
 		end
 	end
 end

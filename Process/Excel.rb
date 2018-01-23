@@ -60,6 +60,8 @@ module LLH
 					case action
 						when "click"
 							result = @click.clickElement(element, attribute, identifier, content)
+						when "click5"
+							result = @click.clickElement(element, attribute, identifier, content, 5)
 						when "clickTableElement"
 							result = @click.clickTableElement(element, attribute, identifier, content)
 						when "command"
@@ -98,6 +100,7 @@ module LLH
 						print "File: "+excelfile+"\n"
 						print "Line-Informations: "+action.to_s+"/"+identifier.to_s+"/"+content.to_s+" \n"
 						print "\n\n"
+						@browser.takeScreenshot()
 						break
 					end
 

@@ -12,18 +12,31 @@ module LLH
 				@vars = LLH::Core::Vars.new
 			end
 
-			def clickElement(element, attribute, id, value)
+			def clickElement(element, attribute, id, value, wait = 0)
+				@wait.waitTime(wait)
+				@wait.waitDisappear("div", "data-notify", "container")
 				clickElement = @wait.wait(element, attribute, id)
 				if clickElement == nil
 					clickElement = @wait.wait(element, attribute, value)
 				end
 				if clickElement != nil
-					begin
+					i = 0
+					isEnabled = false
+					while i < 5
+						if clickElement.enabled?
+							isEnabled = true
+							break
+						end
+						i = i + 1
+						sleep 1
+					end
+					if isEnabled == true
 						clickElement.click
-					rescue
+						sleep 1
+						result = true
+					else
 						result = false
 					end
-					result = true
 				else
 					result = false
 				end
