@@ -13,7 +13,9 @@ module LLH
 			end
 
 			def copyToClipboard(text)
-				open('|pbcopy', "w") { |io| io << div.a.href }
+				str = text.to_s
+				IO.popen('pbcopy', 'w') { |f| f << str }
+				str
 			end
 
 			def getBrowser
