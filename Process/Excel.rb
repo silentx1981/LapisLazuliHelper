@@ -34,7 +34,7 @@ module LLH
 					# Get all columns
 					next if row == nil
 					action = row.cells[0] != nil ? row.cells[0].value : ""
-					next if action == 'Action' || action == ''
+					next if action == 'Action' || action == nil || action.strip == ""
 					element = row.cells[1] != nil ? row.cells[1].value : ""
 					attribute = row.cells[2] != nil ? row.cells[2].value : ""
 					identifier = row.cells[3] != nil ? row.cells[3].value : ""
@@ -58,14 +58,14 @@ module LLH
 					end
 
 					# Find the Waiting-Time from the Action-Statement
-					waitBefore = action.sub(/^([0-9]*[A-Za-z]*)/, "")
-					waitAfter = action.sub(/([A-Za-z]*[0-9]*)$/, "")
+					waitBefore = action.sub(/([A-Za-z]*[0-9]*)$/, "")
+					waitAfter = action.sub(/^([0-9]*[A-Za-z]*)/, "")
+					action = action.gsub(/([^A-Za-z]*)/, "")
 
 					# Wait Before
 					if waitBefore.to_i > 0
 						sleep waitBefore.to_i
 					end
-
 
 					# Execute the action
 					result = false
