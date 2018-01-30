@@ -23,10 +23,6 @@ module LLH
 			end
 
 			def open(url)
-				result = false
-				if (@json.isJson(url))
-					## getUrl from other URL JSON-Object
-				end
 				if url.to_s.match(/(^http:\/\/)/) == nil && url.to_s.match(/(^https:\/\/)/) == nil
 					url = @vars.getParsedValue(url)
 				end

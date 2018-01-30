@@ -7,6 +7,7 @@ module LLH
 			@key = nil
 			@vars = nil
 			@config = nil
+			@path = nil
 
 			def initialize(browser)
 				@browser = browser
@@ -14,6 +15,7 @@ module LLH
 				@key = LLH::Core::Key.new(@browser)
 				@vars = LLH::Core::Vars.new
 				@config = LLH::Core::Config.new
+				@path = LLH::Core::Path.new
 			end
 
 			def fill(element, attribute, id, value)
@@ -30,7 +32,7 @@ module LLH
 			def fillFile(element, attribut, id, value)
 			    sleep 2
 				file = value
-				filesRoot = @config.get("filesRoot")
+				filesRoot = @path.get(@config.get("filesRoot"))
 				file = filesRoot.to_s+"\\\\\\\\"+file.to_s
 				guiName = "GuiTestFile_"+id.to_s
 				objUpload = @browser.find(:like => [element.to_s, attribut.to_s, id.to_s], :throw => false)

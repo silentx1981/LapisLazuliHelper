@@ -9,6 +9,9 @@ module LLH
 			@browser = nil
 			@key = nil
 			@wait = nil
+			@path = nil
+			@subs = nil
+			@print = nil
 
 			def initialize(browser)
 				@config = LLH::Core::Config.new
@@ -19,12 +22,16 @@ module LLH
 				@key = LLH::Core::Key.new(browser)
 				@verify = LLH::Core::Verify.new(browser)
 				@wait = LLH::Core::Wait.new(browser)
+				@path = LLH::Core::Path.new
+				@showProgress = @config.get('showProgress')
+				@print = LLH::Core::Print.new
+				@subs = ""
 			end
 
 			def run(excelfile, parentRequired = 'yes', sub = 0)
 
 				configRoot = @config.get('configRoot')
-				workbook = RubyXL::Parser.parse(configRoot + "/" + excelfile)
+				workbook = RubyXL::Parser.parse(@path.get(configRoot + "." + excelfile)+".xlsx")
 				worksheet = workbook[0]
 
 				index = 0;
@@ -48,13 +55,14 @@ module LLH
 					# Get the Parsed Value
 					content = @vars.getParsedValue(content)
 
-					if @config.get('showProgress') == 'yes'
+					if @showProgress == 'yes'
 						i = 0
+						@subs = ""
 						while i < sub
-							print " > "
+							@subs =  @subs + " > "
 							i = i + 1
 						end
-						print excelfile.to_s + " / Row: " + index.to_s + " \n"
+						print @subs + excelfile.to_s + " / Row: " + index.to_s
 					end
 
 					# Find the Waiting-Time from the Action-Statement
@@ -77,7 +85,7 @@ module LLH
 						when "command"
 							result = @key.command(identifier)
 						when "copyVars"
-							result = @vars.copyVars(identifier, content)
+							result = @vars.copyVars(identifier, content, true)
 						when "fill"
 							result = @fill.fill(element, attribute, identifier, content)
 						when "fillFile"
@@ -91,7 +99,7 @@ module LLH
 						when "openJson"
 							result = @browser.openJson(content)
 						when "include"
-							result = run(content, required, (sub + 1))
+							result = include(element, attribute, identifier, content, required, (sub + 1))
 						when "keys"
 							result = @key.sendKeys(identifier)
 						when "run"
@@ -100,6 +108,8 @@ module LLH
 							result = @browser.takeScreenshot()
 						when "setVars"
 							result = @vars.setVarsByExcel(content)
+						when "setVarsPerson"
+							result = @vars.setVarsPersonsFromExcel(element, content)
 						when "verify"
 							result = @verify.verify(element, attribute, identifier, content)
 						when "wait"
@@ -111,6 +121,15 @@ module LLH
 						sleep waitAfter.to_i
 					end
 
+					if @showProgress == 'yes' && action != 'include' && action != 'run'
+						if result == false
+							@browser.takeScreenshot()
+							print " / Failed \n"
+						else
+							print " / OK \n"
+						end
+					end
+
 					if result == false && required == 'yes' && parentRequired == 'yes'
 						print "Error in LLH::Process::Excel \n"
 						print "Row " + index.to_s + " \n"
@@ -118,11 +137,21 @@ module LLH
 						print "Line-Informations: " + action.to_s + "/" + identifier.to_s + "/" + content.to_s + " \n"
 						print "\n\n"
 						@browser.takeScreenshot()
-						break
+						return false
 					end
 
 				end
 
+			end
+
+			def include(element, attribute, identifier, content, required, sub)
+				if @showProgress == 'yes'
+					print " / OK \n"
+				end
+				if element != "" && element != nil && attribute != "" && attribute != nil
+					@vars.copyVars(element, attribute, true)
+				end
+				result = run(content, required, sub)
 			end
 
 		end

@@ -12,9 +12,9 @@ module LLH
 
 			def verify(element, attribute, identifier, content)
 				verifyElement = @wait.wait(element, attribute, identifier)
-				if verifyElement == nil
+				if verifyElement == nil && content != '' && content != nil
 					verifyElement = @wait.wait(element, attribute, content)
-				elsif content != ''
+				elsif verifyElement != nil && content != ''
 					return verifyElement.text == content.to_s
 				end
 				if verifyElement != nil

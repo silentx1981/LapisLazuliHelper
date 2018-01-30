@@ -30,9 +30,13 @@ module LLH
 						sleep 1
 					end
 					if isEnabled == true
-						clickElement.click
-						sleep 1
-						result = true
+						begin
+							clickElement.click
+							sleep 1
+							result = true
+						rescue
+							result = false
+						end
 					else
 						result = false
 					end
@@ -47,6 +51,15 @@ module LLH
 				searchObj = {}
 				searchArr = {}
 				json.each do |key,value|
+					matches = value.scan(/(\{[A-Za-z0-9]*?\}){1}/)
+					matches.each do |match|
+                    	if match != nil
+                    		onlytext = match[0].gsub(/([\{\}])/, '')
+                    		if $vars.key?(onlytext)
+                    			value = value.sub(match[0], $vars[onlytext].to_s)
+                    		end
+                    	end
+                    end
 					if @vars.get(value) != nil
 						searchObj[key] = @vars.get(value)
 					else

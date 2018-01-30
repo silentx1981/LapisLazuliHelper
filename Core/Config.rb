@@ -2,10 +2,13 @@ module LLH
 	module Core
 		class Config
 
+			@path = nil
+
 			def initialize
 				if ($config == nil)
 					$config = {}
 				end
+				@path = LLH::Core::Path.new
 			end
 
 			def get(name)
@@ -19,7 +22,7 @@ module LLH
 
 			def setConfigByExcel(excelfile)
 
-				workbook = RubyXL::Parser.parse(excelfile)
+				workbook = RubyXL::Parser.parse(@path.get(excelfile.to_s)+".xlsx")
 				worksheet = workbook[0]
 
 				worksheet.each do |row|
