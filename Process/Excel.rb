@@ -88,6 +88,8 @@ module LLH
 							result = @vars.copyVars(identifier, content, true)
 						when "fill"
 							result = @fill.fill(element, attribute, identifier, content)
+						when "fillDate"
+							result = @fill.fillDate(element, attribute, identifier, content)
 						when "fillFile"
 							result = @fill.fillFile(element, attribute, identifier, content)
 						when "fillJson"

@@ -67,6 +67,19 @@ module LLH
 				end
 			end
 
+			def fillDate(element, attribute, id, value)
+				result = false
+				fillElement = @wait.wait(element, attribute, id)
+				if fillElement != nil
+					fillElementPicker = fillElement.input(:"ng-model" => "picker")
+					if fillElementPicker != nil
+						fillElementPicker.send_keys value.to_s
+						result = true
+					end
+				end
+				return result
+			end
+
 
 		end
 	end
