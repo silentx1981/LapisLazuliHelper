@@ -24,6 +24,17 @@ module LLH
 				end
 			end
 
+			def notVerify(element, attribute, identifier, content)
+				verifyElement = @wait.wait(element, attribute, identifier)
+				if verifyElement == nil && content != '' && content != nil
+					verifyElement = @wait.wait(element, attribute, content)
+				end
+				if verifyElement == nil
+					result = true
+				else
+					result = false
+				end
+			end
 		end
 	end
 end

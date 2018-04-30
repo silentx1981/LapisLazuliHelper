@@ -114,6 +114,8 @@ module LLH
 							result = @vars.setVarsPersonsFromExcel(element, content)
 						when "verify"
 							result = @verify.verify(element, attribute, identifier, content)
+						when "verifyNo"
+							result = @verify.notVerify(element, attribute, identifier, content)
 						when "wait"
 							result = @wait.waitTime(identifier)
 					end
